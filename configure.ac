@@ -425,6 +425,8 @@ AC_CHECK_HEADERS(m4_normalize([
 	gcov.h
 	iconv.h
 	linux/nexthop.h
+	linux/mroute.h
+	linux/mroute6.h
 	mqueue.h
 	netinet/sctp.h
 	netipx/ipx.h
