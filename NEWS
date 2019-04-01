@@ -3,6 +3,7 @@ Noteworthy changes in release ?.? (????-??-??)
 
 * Improvements
   * Added -n/--syscall-number option for printing syscall numbers.
+  * Added an ability to raise Strauss awareness.
 
 * Bug fixes
 

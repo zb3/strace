@@ -36,6 +36,7 @@
 #include "ptrace_syscall_info.h"
 #include "scno.h"
 #include "printsiginfo.h"
+#include "straus.h"
 #include "trace_event.h"
 #include "xstring.h"
 #include "delay.h"
@@ -88,6 +89,8 @@ static bool rflag;
 static int rflag_scale = 1000;
 static int rflag_width = 6;
 static bool print_pid_pfx;
+
+static unsigned int version_verbosity;
 
 /* -I n */
 enum {
@@ -215,7 +218,7 @@ strerror(int err_no)
 #endif /* HAVE_STERRROR */
 
 static void
-print_version(void)
+print_version(unsigned int verbosity)
 {
 	static const char features[] =
 #ifdef ENABLE_STACKTRACE
@@ -247,6 +250,9 @@ print_version(void)
 	       PACKAGE_NAME, PACKAGE_VERSION, COPYRIGHT_YEAR, PACKAGE_URL);
 	printf("\nOptional features enabled:%s\n",
 	       features[0] ? features : " (none)");
+
+	/* Raise straus awareness */
+	print_straus(verbosity);
 }
 
 static void
@@ -1937,6 +1943,13 @@ make_env(char **orig_env, char *const *env_changes, size_t env_change_count)
 	return new_env;
 }
 
+static void
+increase_version_verbosity(void)
+{
+	if (version_verbosity < (STRAUS_START_VERBOSITY + straus_lines))
+		version_verbosity++;
+}
+
 /*
  * Initialization part of main() was eating much stack (~0.5k),
  * which was unused after init.
@@ -2267,8 +2280,7 @@ init(int argc, char *argv[])
 			qualify_abbrev("none");
 			break;
 		case 'V':
-			print_version();
-			exit(0);
+			increase_version_verbosity();
 			break;
 		case 'w':
 			count_wallclock = 1;
@@ -2351,6 +2363,11 @@ init(int argc, char *argv[])
 			error_msg_and_help(NULL);
 			break;
 		}
+	}
+
+	if (version_verbosity) {
+		print_version(version_verbosity);
+		exit(0);
 	}
 
 	argv += optind;

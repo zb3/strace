@@ -328,6 +328,8 @@ libstrace_a_SOURCES =	\
 	static_assert.h	\
 	statx.c		\
 	statx.h		\
+	straus.c	\
+	straus.h	\
 	string_to_uint.c \
 	string_to_uint.h \
 	swapon.c	\
