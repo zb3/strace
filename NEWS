@@ -15,6 +15,8 @@ Noteworthy changes in release ?.? (????-??-??)
      --relative-timestamps, and --syscall-times options, respectively).
    * Ability to set arbitrary absolute timestamp formatting (using
      --absolute-timestamps=format:strftime=FORMAT option syntax).
+   * Ability to set ISO 8601 time stamp format (using
+     --absolute-timestamps=format:iso8601 option syntax).
 
 * Bug fixes
   * Fixed build on csky abiv1 architecture.
