@@ -13,6 +13,8 @@ Noteworthy changes in release ?.? (????-??-??)
    * Ability to set precision for the absolute timestamp, relative timestamp,
      and syscall time output (using --absolute-timestamps,
      --relative-timestamps, and --syscall-times options, respectively).
+   * Ability to set arbitrary absolute timestamp formatting (using
+     --absolute-timestamps=format:strftime=FORMAT option syntax).
 
 * Bug fixes
   * Fixed build on csky abiv1 architecture.

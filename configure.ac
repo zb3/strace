@@ -275,6 +275,7 @@ AC_CHECK_FUNCS(m4_normalize([
 	futimens
 	iconv_open
 	if_indextoname
+	nl_langinfo
 	open64
 	open_memstream
 	prctl
@@ -389,6 +390,7 @@ AC_CHECK_HEADERS(m4_normalize([
 	gcov.h
 	iconv.h
 	inttypes.h
+	langinfo.h
 	linux/bsg.h
 	linux/dm-ioctl.h
 	linux/dqblk_xfs.h
