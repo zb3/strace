@@ -230,6 +230,14 @@ ioctl_ptp
 ioctl_random
 ioctl_rtc
 ioctl_rtc-v
+ioctl_rtc-success
+ioctl_rtc-success-Xabbrev
+ioctl_rtc-success-Xraw
+ioctl_rtc-success-Xverbose
+ioctl_rtc-success-v
+ioctl_rtc-success-v-Xabbrev
+ioctl_rtc-success-v-Xraw
+ioctl_rtc-success-v-Xverbose
 ioctl_scsi
 ioctl_sg_io_v3
 ioctl_sg_io_v4
