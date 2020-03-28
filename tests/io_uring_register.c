@@ -41,6 +41,31 @@
 # define BE_LE(be_, le_) le_
 #endif
 
+#ifndef HAVE_STRUCT_IO_URING_FILES_UPDATE
+struct io_uring_files_update {
+	__u32 offset;
+	__u32 resv;
+	__aligned_u64 /* __s32 * */ fds;
+};
+#endif
+
+#ifdef HAVE_STRUCT_IO_URING_PROBE
+struct io_uring_probe_op {
+        __u8 op;
+        __u8 resv;
+        __u16 flags;
+        __u32 resv2;
+};
+
+struct io_uring_probe {
+        __u8 last_op;
+        __u8 ops_len;
+        __u16 resv;
+        __u32 resv2[3];
+        struct io_uring_probe_op ops[0];
+};
+#endif
+
 static const char *errstr;
 
 static long
@@ -149,7 +174,7 @@ main(void)
 		       (unsigned int) ARRAY_SIZE(fds), errstr);
 	}
 
-#ifdef HAVE_STRUCT_IO_URING_FILES_UPDATE
+	/* IORING_REGISTER_FILES_UPDATE */
 	struct io_uring_files_update bogus_iufu;
 	struct io_uring_files_update iufu;
 
@@ -176,9 +201,8 @@ main(void)
 	       ", {offset=3735929054, fds=[%u<%s>, %u<%s>]}, %u) = %s\n",
 	       fd_null, path_null, fd_full, path_full, fd_null, path_null,
 	       (unsigned int) ARRAY_SIZE(fds), errstr);
-#endif
 
-#ifdef HAVE_STRUCT_IO_URING_PROBE
+	/* IORING_REGISTER_PROBE */
 	struct io_uring_probe *probe = tail_alloc(sizeof(*probe) +
 		       (DEFAULT_STRLEN + 1) * sizeof(struct io_uring_probe_op));
 
@@ -280,7 +304,6 @@ main(void)
 	sys_io_uring_register(fd_null, IORING_REGISTER_PROBE, probe, 8);
 	printf("io_uring_register(%u<%s>, IORING_REGISTER_PROBE, %p, 8) = %s\n",
 	       fd_null, path_null, probe, errstr);
-#endif
 
 	puts("+++ exited with 0 +++");
 	return 0;
