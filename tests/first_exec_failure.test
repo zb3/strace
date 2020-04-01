@@ -9,7 +9,7 @@
 
 . "${srcdir=.}/init.sh"
 
-$STRACE / 2> "$LOG" &&
+$STRACE --no-tips / 2> "$LOG" &&
 	dump_log_and_fail_with \
 		"$STRACE / failed to handle the error properly"
 

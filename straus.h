@@ -13,7 +13,9 @@
 enum { STRAUS_START_VERBOSITY = 5 };
 
 extern const size_t straus_lines;
+extern bool show_tips;
 
 extern void print_straus(size_t verbosity);
+extern void print_totd(void);
 
 #endif /* STRACE_STRAUS_H */

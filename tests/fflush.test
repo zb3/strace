@@ -10,7 +10,7 @@
 . "${srcdir=.}/init.sh"
 
 run_prog > /dev/null
-args="-o /dev/full -e trace=none $args"
+args="-o /dev/full -e trace=none --no-tips $args"
 
 $STRACE $args > "$EXP" 2> "$LOG" || {
 	msg="$STRACE $args failed with code $?"

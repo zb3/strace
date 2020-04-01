@@ -323,12 +323,13 @@ args='-p 2147483647'
 $STRACE $args 2> "$LOG" &&
 	dump_log_and_fail_with \
 		"strace $args failed to handle the error properly"
+head -n1 < "$LOG" > "$OUT"
 
 for cmd in PTRACE_SEIZE PTRACE_ATTACH; do
 	cat > "$EXP" << __EOF__
 $STRACE_EXE: attach: ptrace($cmd, 2147483647): No such process
 __EOF__
-	diff -- "$EXP" "$LOG" ||
+	diff -- "$EXP" "$OUT" ||
 		continue
 	args=
 	break

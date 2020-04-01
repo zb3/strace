@@ -1398,6 +1398,9 @@ option.
 .B \-\-help
 Print the help summary.
 .TP
+.B \-\-no\-tips
+Do not show strace tips, tricks, and tweaks.
+.TP
 .B \-\-seccomp\-bpf
 Try to enable use of seccomp-bpf (see
 .BR seccomp (2))
