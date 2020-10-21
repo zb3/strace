@@ -8,7 +8,7 @@
 #include "tests.h"
 #include "scno.h"
 
-#if defined __NR_semtimedop || defined __NR_socketcall
+#if defined __NR_semtimedop || defined __NR_ipc
 
 # include <sys/ipc.h>
 # include <sys/sem.h>
@@ -20,6 +20,34 @@
 # define XLAT_MACROS_ONLY
 #  include "xlat/semop_flags.h"
 # undef XLAT_MACROS_ONLY
+
+long
+call_semtimedop(int semid, struct sembuf *semops, size_t nsops, struct timespec *timeout)
+{
+	static const kernel_ulong_t semid_fill = (kernel_ulong_t) -1 - (unsigned int) -1;
+	static const kernel_ulong_t nsops_fill = (kernel_ulong_t) -1 - (size_t) -1;
+
+# ifdef __NR_semtimedop
+	return syscall(__NR_semtimedop,
+		       semid_fill | (unsigned int) semid,
+		       f8ill_ptr_to_kulong(semops),
+		       nsops_fill | nsops,
+		       f8ill_ptr_to_kulong(timeout));
+# elif defined __s390x__ || defined __s390__
+	return syscall(__NR_ipc, 4 /* SEMTIMEDOP */,
+		       semid_fill | (unsigned int) semid,
+		       nsops_fill | nsops,
+		       f8ill_ptr_to_kulong(timeout),
+		       f8ill_ptr_to_kulong(semops));
+# else
+	return syscall(__NR_ipc, 4 /* SEMTIMEDOP */,
+		       semid_fill | (unsigned int) semid,
+		       nsops_fill | nsops,
+		       0,
+		       f8ill_ptr_to_kulong(semops),
+		       f8ill_ptr_to_kulong(timeout));
+# endif
+}
 
 union semun {
 	int val;
@@ -59,11 +87,11 @@ main(void)
 	TAIL_ALLOC_OBJECT_CONST_PTR(struct sembuf, sem_b);
 	TAIL_ALLOC_OBJECT_CONST_PTR(struct sembuf, sem_b2);
 
-	rc = semtimedop(bogus_semid, NULL, bogus_nsops, NULL);
+	rc = call_semtimedop(bogus_semid, NULL, bogus_nsops, NULL);
 	printf("semtimedop(%d, NULL, %u, NULL) = %s\n",
 	       bogus_semid, (unsigned) bogus_nsops, sprintrc(rc));
 
-	rc = semtimedop(bogus_semid, bogus_sops, 1, NULL);
+	rc = call_semtimedop(bogus_semid, bogus_sops, 1, NULL);
 	printf("semtimedop(%d, %p, %u, NULL) = %s\n",
 	       bogus_semid, bogus_sops, 1, sprintrc(rc));
 
@@ -75,7 +103,7 @@ main(void)
 	sem_b2->sem_op = 0xf00d;
 	sem_b2->sem_flg = 0xbeef;
 
-	rc = semtimedop(bogus_semid, sem_b2, 2, NULL);
+	rc = call_semtimedop(bogus_semid, sem_b2, 2, NULL);
 	printf("semtimedop(%d, [{%hu, %hd, %s%s%#hx}, ... /* %p */], %u"
 	       ", NULL) = %s\n",
 	       bogus_semid, sem_b2->sem_num, sem_b2->sem_op,
@@ -84,26 +112,26 @@ main(void)
 	       (short) (sem_b2->sem_flg & ~(SEM_UNDO | IPC_NOWAIT)),
 	       sem_b2 + 1, 2, sprintrc(rc));
 
-	if (semtimedop(id, sem_b, 1, NULL))
-		perror_msg_and_skip("semtimedop, 1");
+	if (call_semtimedop(id, sem_b, 1, NULL))
+		{} /*perror_msg_and_skip("semtimedop, 1");*/
 	printf("semtimedop(%d, [{0, 1, SEM_UNDO}], 1, NULL) = 0\n", id);
 
 	sem_b->sem_op = -1;
-	if (semtimedop(id, sem_b, 1, NULL))
-		perror_msg_and_skip("semtimedop, -1");
+	if (call_semtimedop(id, sem_b, 1, NULL))
+	{} /*perror_msg_and_skip("semtimedop, -1");*/
 	printf("semtimedop(%d, [{0, -1, SEM_UNDO}], 1, NULL) = 0\n", id);
 
-	rc = semtimedop(bogus_semid, NULL, bogus_nsops, NULL);
+	rc = call_semtimedop(bogus_semid, NULL, bogus_nsops, NULL);
 	printf("semtimedop(%d, NULL, %u, NULL) = %s\n",
 		bogus_semid, (unsigned) bogus_nsops, sprintrc(rc));
 
-	rc = semtimedop(id, sem_b + 1, 1, ts + 1);
+	rc = call_semtimedop(id, sem_b + 1, 1, ts + 1);
 	printf("semtimedop(%d, %p, 1, %p) = %s\n",
 		id, sem_b + 1, ts + 1, sprintrc(rc));
 
 	ts->tv_sec = 1;
 	ts->tv_nsec = 123456789;
-	rc = semtimedop(bogus_semid, sem_b2, 2, ts);
+	rc = call_semtimedop(bogus_semid, sem_b2, 2, ts);
 	printf("semtimedop(%d, [{%hu, %hd, %s%s%#hx}, ... /* %p */], %u"
 		", {tv_sec=%lld, tv_nsec=%llu}) = %s\n",
 		bogus_semid, sem_b2->sem_num, sem_b2->sem_op,
@@ -115,12 +143,12 @@ main(void)
 		sprintrc(rc));
 
 	sem_b->sem_op = 1;
-	if (semtimedop(id, sem_b, 1, NULL))
+	if (call_semtimedop(id, sem_b, 1, NULL))
 		perror_msg_and_skip("semtimedop, 1");
 	printf("semtimedop(%d, [{0, 1, SEM_UNDO}], 1, NULL) = 0\n", id);
 
 	sem_b->sem_op = -1;
-	if (semtimedop(id, sem_b, 1, ts))
+	if (call_semtimedop(id, sem_b, 1, ts))
 		perror_msg_and_skip("semtimedop, -1");
 	printf("semtimedop(%d, [{0, -1, SEM_UNDO}], 1"
 	       ", {tv_sec=%lld, tv_nsec=%llu}) = 0\n", id,
@@ -129,7 +157,7 @@ main(void)
 	sem_b->sem_op = 1;
 	ts->tv_sec = 0xdeadbeefU;
 	ts->tv_nsec = 0xfacefeedU;
-	rc = semtimedop(id, sem_b, 1, ts);
+	rc = call_semtimedop(id, sem_b, 1, ts);
 	printf("semtimedop(%d, [{0, 1, SEM_UNDO}], 1"
 	       ", {tv_sec=%lld, tv_nsec=%llu}) = %s\n",
 	       id, (long long) ts->tv_sec,
@@ -138,7 +166,7 @@ main(void)
 	sem_b->sem_op = -1;
 	ts->tv_sec = (time_t) 0xcafef00ddeadbeefLL;
 	ts->tv_nsec = (long) 0xbadc0dedfacefeedLL;
-	rc = semtimedop(id, sem_b, 1, ts);
+	rc = call_semtimedop(id, sem_b, 1, ts);
 	printf("semtimedop(%d, [{0, -1, SEM_UNDO}], 1"
 	       ", {tv_sec=%lld, tv_nsec=%llu}) = %s\n",
 	       id, (long long) ts->tv_sec,
@@ -150,6 +178,6 @@ main(void)
 
 #else
 
-SKIP_MAIN_UNDEFINED("__NR_semtimedop || __NR_socketcall")
+SKIP_MAIN_UNDEFINED("__NR_call_semtimedop || __NR_ipc")
 
 #endif
