@@ -28,14 +28,14 @@ msg()
 
 prefix=
 case $# in
-	1)	inc_dir="$1"; shift
-		;;
-	2)	inc_dir="$1"; shift
-		prefix="$1"; shift
-		;;
-	*)	echo >&2 "usage: $me include-directory [prefix]"
-		exit 1
-		;;
+1)	inc_dir="$1"; shift
+	;;
+2)	inc_dir="$1"; shift
+	prefix="$1"; shift
+	;;
+*)	echo >&2 "usage: $me include-directory [prefix]"
+	exit 1
+	;;
 esac
 
 [ -z "$prefix" ] ||
@@ -170,143 +170,143 @@ process_file()
 
 	# Soft pre-include workarounds for some processed files.  Fragile.
 	case "$f" in
-		*asm/amigayle.h)
-			return 0 # false positive
-			;;
-		*asm/cmb.h)
-			echo '#include <asm/dasd.h>'
-			;;
-		*asm/core_*.h)
-			return 0 # false positives
-			;;
-		*asm*/ioctls.h)
-			cat <<-'__EOF__'
-				#include <asm/termios.h>
-				#include <linux/serial.h>
-				__EOF__
-			;;
-		drm/sis_drm.h)
-			echo '#include <drm/drm.h>'
-			;;
-		*drm/*_drm.h)
-			echo '#include <drm/drm.h>' > "$tmpdir/drm.h"
-			;;
-		fbio.h|*/fbio.h)
-			cat <<-'__EOF__'
-				#include <linux/fb.h>
-				#undef FBIOGETCMAP
-				#undef FBIOPUTCMAP
-				__EOF__
-			;;
-		*linux/atm_zatm.h)
-			cat <<-'__EOF__'
-				#include <linux/atm.h>
-				#ifndef _LINUX_TIME_H
-				# define _LINUX_TIME_H
-				#endif
-				#ifndef _UAPI_LINUX_TIME_H
-				# define _UAPI_LINUX_TIME_H
-				#endif
-				__EOF__
-			;;
-		*linux/atm?*.h)
-			echo '#include <linux/atm.h>'
-			;;
-		*linux/auto_fs*.h)
-			echo 'typedef u32 compat_ulong_t;'
-			;;
-		*linux/coda.h|*android_alarm.h)
-			cat <<-'__EOF__'
-				#ifndef _LINUX_TIME_H
-				# define _LINUX_TIME_H
-				#endif
-				#ifndef _UAPI_LINUX_TIME_H
-				# define _UAPI_LINUX_TIME_H
-				#endif
-				__EOF__
-			;;
-		*linux/fs.h|*linux/ncp_fs.h)
-			cat <<-'__EOF__'
-				#include <linux/blktrace_api.h>
-				#include <linux/fiemap.h>
-				__EOF__
-			;;
-		*linux/ndctl.h)
-			echo '#define PAGE_SIZE 0'
-			;;
-		*linux/if_pppox.h)
-			echo '#include <netinet/in.h>'
-			;;
-		*linux/if_tun.h|*linux/ppp-ioctl.h)
-			echo '#include <linux/filter.h>'
-			;;
-		*linux/isdn_ppp.h|*linux/gsmmux.h)
-			echo '#include <linux/if.h>'
-			;;
-		*media*/saa6588.h)
-			echo 'typedef struct poll_table_struct poll_table;'
-			;;
-		*linux/ivtvfb.h|*linux/meye.h|*media/*.h)
-			echo '#include <linux/videodev2.h>'
-			;;
-		*linux/kvm.h)
-			case "$uname_m" in
-				i?86|x86_64|aarch64|mips*|ppc*|s390*) ;;
-				*) return 0 ;; # not applicable
-			esac
-			;;
-		*linux/omap3isp.h)
-			echo 'struct omap3isp_stat_data_time32 {uint32_t dummy32[4]; uint16_t dummy16[3]; };'
-			;;
-		*linux/platform_data/cros_ec_chardev.h)
-			echo 'struct cros_ec_command {uint32_t dummy32[5]; uint8_t dummy8[0]; };'
-			;;
-		*linux/sonet.h)
-			echo '#include <linux/atmioc.h>'
-			;;
-		*linux/usbdevice_fs.h)
-			cat <<-'__EOF__'
-				struct usbdevfs_ctrltransfer32 { __u32 unused[4]; };
-				struct usbdevfs_bulktransfer32 { __u32 unused[4]; };
-				struct usbdevfs_disconnectsignal32 { __u32 unused[2]; };
-				struct usbdevfs_urb32 { __u8 unused[42]; };
-				struct usbdevfs_ioctl32 { __u32 unused[3]; };
-				__EOF__
-			;;
-		logger.h|*/logger.h)
-			echo 'typedef __u32 kuid_t;'
-			;;
-		*sound/asequencer.h)
-			cat <<-'__EOF__'
-				#include <sound/asound.h>
-				struct snd_seq_queue_owner { __u32 unused[0]; };
-				__EOF__
-			;;
-		*sound/emu10k1.h)
-			cat <<-'__EOF__'
-				#include <sound/asound.h>
-				#ifndef DECLARE_BITMAP
-				# define DIV_ROUND_UP(x,y) (((x) + ((y) - 1)) / (y))
-				# define BITS_TO_LONGS(nr) DIV_ROUND_UP(nr, 8 * sizeof(long))
-				# define DECLARE_BITMAP(name,bits) unsigned long name[BITS_TO_LONGS(bits)]
-				#endif
-				__EOF__
-			;;
-		*video/sstfb.h)
-			echo 'struct fb_info;'
-			;;
-		*xen/evtchn.h|*xen/gntdev.h)
-			cat <<-'__EOF__'
-				typedef uint32_t grant_ref_t;
-				typedef uint16_t domid_t;
-				__EOF__
-			;;
-		*xen/interface/*.h)
-			return 0 # false positives
-			;;
-		*xen/privcmd.h)
-			return 0 # too much work to make it compileable
-			;;
+	*asm/amigayle.h)
+		return 0 # false positive
+		;;
+	*asm/cmb.h)
+		echo '#include <asm/dasd.h>'
+		;;
+	*asm/core_*.h)
+		return 0 # false positives
+		;;
+	*asm*/ioctls.h)
+		cat <<-'__EOF__'
+			#include <asm/termios.h>
+			#include <linux/serial.h>
+			__EOF__
+		;;
+	drm/sis_drm.h)
+		echo '#include <drm/drm.h>'
+		;;
+	*drm/*_drm.h)
+		echo '#include <drm/drm.h>' > "$tmpdir/drm.h"
+		;;
+	fbio.h|*/fbio.h)
+		cat <<-'__EOF__'
+			#include <linux/fb.h>
+			#undef FBIOGETCMAP
+			#undef FBIOPUTCMAP
+			__EOF__
+		;;
+	*linux/atm_zatm.h)
+		cat <<-'__EOF__'
+			#include <linux/atm.h>
+			#ifndef _LINUX_TIME_H
+			# define _LINUX_TIME_H
+			#endif
+			#ifndef _UAPI_LINUX_TIME_H
+			# define _UAPI_LINUX_TIME_H
+			#endif
+			__EOF__
+		;;
+	*linux/atm?*.h)
+		echo '#include <linux/atm.h>'
+		;;
+	*linux/auto_fs*.h)
+		echo 'typedef u32 compat_ulong_t;'
+		;;
+	*linux/coda.h|*android_alarm.h)
+		cat <<-'__EOF__'
+			#ifndef _LINUX_TIME_H
+			# define _LINUX_TIME_H
+			#endif
+			#ifndef _UAPI_LINUX_TIME_H
+			# define _UAPI_LINUX_TIME_H
+			#endif
+			__EOF__
+		;;
+	*linux/fs.h|*linux/ncp_fs.h)
+		cat <<-'__EOF__'
+			#include <linux/blktrace_api.h>
+			#include <linux/fiemap.h>
+			__EOF__
+		;;
+	*linux/ndctl.h)
+		echo '#define PAGE_SIZE 0'
+		;;
+	*linux/if_pppox.h)
+		echo '#include <netinet/in.h>'
+		;;
+	*linux/if_tun.h|*linux/ppp-ioctl.h)
+		echo '#include <linux/filter.h>'
+		;;
+	*linux/isdn_ppp.h|*linux/gsmmux.h)
+		echo '#include <linux/if.h>'
+		;;
+	*media*/saa6588.h)
+		echo 'typedef struct poll_table_struct poll_table;'
+		;;
+	*linux/ivtvfb.h|*linux/meye.h|*media/*.h)
+		echo '#include <linux/videodev2.h>'
+		;;
+	*linux/kvm.h)
+		case "$uname_m" in
+		i?86|x86_64|aarch64|mips*|ppc*|s390*) ;;
+		*) return 0 ;; # not applicable
+		esac
+		;;
+	*linux/omap3isp.h)
+		echo 'struct omap3isp_stat_data_time32 {uint32_t dummy32[4]; uint16_t dummy16[3]; };'
+		;;
+	*linux/platform_data/cros_ec_chardev.h)
+		echo 'struct cros_ec_command {uint32_t dummy32[5]; uint8_t dummy8[0]; };'
+		;;
+	*linux/sonet.h)
+		echo '#include <linux/atmioc.h>'
+		;;
+	*linux/usbdevice_fs.h)
+		cat <<-'__EOF__'
+			struct usbdevfs_ctrltransfer32 { __u32 unused[4]; };
+			struct usbdevfs_bulktransfer32 { __u32 unused[4]; };
+			struct usbdevfs_disconnectsignal32 { __u32 unused[2]; };
+			struct usbdevfs_urb32 { __u8 unused[42]; };
+			struct usbdevfs_ioctl32 { __u32 unused[3]; };
+			__EOF__
+		;;
+	logger.h|*/logger.h)
+		echo 'typedef __u32 kuid_t;'
+		;;
+	*sound/asequencer.h)
+		cat <<-'__EOF__'
+			#include <sound/asound.h>
+			struct snd_seq_queue_owner { __u32 unused[0]; };
+			__EOF__
+		;;
+	*sound/emu10k1.h)
+		cat <<-'__EOF__'
+			#include <sound/asound.h>
+			#ifndef DECLARE_BITMAP
+			# define DIV_ROUND_UP(x,y) (((x) + ((y) - 1)) / (y))
+			# define BITS_TO_LONGS(nr) DIV_ROUND_UP(nr, 8 * sizeof(long))
+			# define DECLARE_BITMAP(name,bits) unsigned long name[BITS_TO_LONGS(bits)]
+			#endif
+			__EOF__
+		;;
+	*video/sstfb.h)
+		echo 'struct fb_info;'
+		;;
+	*xen/evtchn.h|*xen/gntdev.h)
+		cat <<-'__EOF__'
+			typedef uint32_t grant_ref_t;
+			typedef uint16_t domid_t;
+			__EOF__
+		;;
+	*xen/interface/*.h)
+		return 0 # false positives
+		;;
+	*xen/privcmd.h)
+		return 0 # too much work to make it compileable
+		;;
 	esac > "$tmpdir"/fixes.h
 
 	cat > "$tmpdir"/header.in <<-__EOF__
@@ -330,78 +330,78 @@ process_file()
 		mkdir -p "$tmpdir/${f%/*}"
 	# Hard workarounds for some processed files.  Very fragile.
 	case "$f" in
-		*asm-generic/ioctls.h)
-			# Filter out macros defined using unavailable types.
-			case "$uname_m" in
-				alpha*|ppc*)
-					grep -Fv 'struct termios2' < "$s" > "$tmpdir/$f"
-					;;
-			esac
+	*asm-generic/ioctls.h)
+		# Filter out macros defined using unavailable types.
+		case "$uname_m" in
+		alpha*|ppc*)
+			grep -Fv 'struct termios2' < "$s" > "$tmpdir/$f"
 			;;
-		*acpi/*|*linux/i2o.h|*media*/exynos-fimc.h|*media/v4l2-subdev.h|*net/bluetooth/*|net/nfc/nci_core.h)
-			# Fetch macros only.
-			grep "${r_define}${r_cmd_name}" < "$s" > "$tmpdir/$f"
-			;;
-		binder.h|*/binder.h)
-			# Convert enums to macros.
-			sed '/^enum binder/,/^};/d' < "$s" > "$tmpdir/$f"
-			sed -n '/^enum binder/,/^};/ s/^[[:space:]].*/&/p' < "$s" |
+		esac
+		;;
+	*acpi/*|*linux/i2o.h|*media*/exynos-fimc.h|*media/v4l2-subdev.h|*net/bluetooth/*|net/nfc/nci_core.h)
+		# Fetch macros only.
+		grep "${r_define}${r_cmd_name}" < "$s" > "$tmpdir/$f"
+		;;
+	binder.h|*/binder.h)
+		# Convert enums to macros.
+		sed '/^enum binder/,/^};/d' < "$s" > "$tmpdir/$f"
+		sed -n '/^enum binder/,/^};/ s/^[[:space:]].*/&/p' < "$s" |
 		sed -e 's/^[[:space:]]*\([A-Z][A-Z_0-9]*\)[[:space:]]*=[[:space:]]*_\(IO\|IOW\|IOR\|IOWR\|IOC\)[[:space:]]*(/#define \1 _\2(/
 			s/^\(#define .*)\),$/\1/
 			s/^\(#define .*,\)$/\1 \\/
 			s/^\([[:space:]]\+[^),]\+)\),$/\1/' >> "$tmpdir/$f"
-			;;
-		*drm/r128_drm.h)
-			# Filter out the code that references unknown types.
-			sed '/drm_r128_clear2_t/d' < "$s" > "$tmpdir/$f"
-			;;
-		*drm/sis_drm.h)
-			# Filter out the code that references unknown types.
-			sed '/^struct sis_file_private/,/^}/d' < "$s" > "$tmpdir/$f"
-			;;
-		*drm/via_drm.h)
-			# Create the file it attempts to include.
-			touch "$tmpdir/via_drmclient.h"
-			# Filter out the code that references unknown types.
-			sed '/^struct via_file_private/,/^}/d' < "$s" > "$tmpdir/$f"
-			;;
-		*linux/dma-buf.h)
-			# Filter out duplicates.
-			sed '/\<DMA_BUF_SET_NAME\>/d' < "$s" > "$tmpdir/$f"
-			;;
-		*linux/nilfs2_fs.h)
-			# Create the file it attempts to include.
-			touch "$tmpdir/asm/bug.h"
-			;;
-		*linux/videodev2.h)
-			# Force time64 based definitions.
-			sed -e 's/__KERNEL__/__linux__/' \
-			    -e 's/linux\/types\.h/linux\/time_types.h/' \
-			    < "$s" > "$tmpdir/$f"
-			;;
-		*linux/vmw_vmci_defs.h)
-			# Fetch ioctl macros only.
-			grep "${r_define}I" < "$s" > "$tmpdir/$f"
-			;;
-		*media/v4l2-common.h)
-			# Fetch one piece of code containing ioctls definitions.
-			sed -n '/\* s_config \*/,/ ---/p' < "$s" >> "$tmpdir/$f"
-			;;
-		*media/v4l2-ioctl.h)
-			echo 'struct old_timespec32 {int32_t dummy[2];};' >> "$tmpdir/$f"
-			echo 'struct old_timeval32 {int32_t dummy[2];};' >> "$tmpdir/$f"
-			# Fetch one piece of code containing ioctls definitions.
-			awk '/^struct v4l2_event_time32/{p=1}/#endif/{p=0}p{print}' < "$s" >> "$tmpdir/$f"
-			;;
-		*sound/pcm.h)
-			echo '#include <uapi/sound/asound.h>' > "$tmpdir/$f"
-			# Fetch one piece of code containing ioctls definitions.
-			awk '/^struct snd_pcm_status64 {/{p=1}/#endif/{p=0}p{print}' < "$s" >> "$tmpdir/$f"
-			;;
-		openpromio.h|*/openpromio.h|fbio.h|*/fbio.h)
-			# Create the file it attempts to include.
-			mkdir -p "$tmpdir/linux"
-			touch "$tmpdir/linux/compiler.h"
+		;;
+	*drm/r128_drm.h)
+		# Filter out the code that references unknown types.
+		sed '/drm_r128_clear2_t/d' < "$s" > "$tmpdir/$f"
+		;;
+	*drm/sis_drm.h)
+		# Filter out the code that references unknown types.
+		sed '/^struct sis_file_private/,/^}/d' < "$s" > "$tmpdir/$f"
+		;;
+	*drm/via_drm.h)
+		# Create the file it attempts to include.
+		touch "$tmpdir/via_drmclient.h"
+		# Filter out the code that references unknown types.
+		sed '/^struct via_file_private/,/^}/d' < "$s" > "$tmpdir/$f"
+		;;
+	*linux/dma-buf.h)
+		# Filter out duplicates.
+		sed '/\<DMA_BUF_SET_NAME\>/d' < "$s" > "$tmpdir/$f"
+		;;
+	*linux/nilfs2_fs.h)
+		# Create the file it attempts to include.
+		touch "$tmpdir/asm/bug.h"
+		;;
+	*linux/videodev2.h)
+		# Force time64 based definitions.
+		sed -e 's/__KERNEL__/__linux__/' \
+		    -e 's/linux\/types\.h/linux\/time_types.h/' \
+		    < "$s" > "$tmpdir/$f"
+		;;
+	*linux/vmw_vmci_defs.h)
+		# Fetch ioctl macros only.
+		grep "${r_define}I" < "$s" > "$tmpdir/$f"
+		;;
+	*media/v4l2-common.h)
+		# Fetch one piece of code containing ioctls definitions.
+		sed -n '/\* s_config \*/,/ ---/p' < "$s" >> "$tmpdir/$f"
+		;;
+	*media/v4l2-ioctl.h)
+		echo 'struct old_timespec32 {int32_t dummy[2];};' >> "$tmpdir/$f"
+		echo 'struct old_timeval32 {int32_t dummy[2];};' >> "$tmpdir/$f"
+		# Fetch one piece of code containing ioctls definitions.
+		awk '/^struct v4l2_event_time32/{p=1}/#endif/{p=0}p{print}' < "$s" >> "$tmpdir/$f"
+		;;
+	*sound/pcm.h)
+		echo '#include <uapi/sound/asound.h>' > "$tmpdir/$f"
+		# Fetch one piece of code containing ioctls definitions.
+		awk '/^struct snd_pcm_status64 {/{p=1}/#endif/{p=0}p{print}' < "$s" >> "$tmpdir/$f"
+		;;
+	openpromio.h|*/openpromio.h|fbio.h|*/fbio.h)
+		# Create the file it attempts to include.
+		mkdir -p "$tmpdir/linux"
+		touch "$tmpdir/linux/compiler.h"
 	esac
 	if [ -f "$tmpdir/$f" ]; then
 		s="$tmpdir/$f"
@@ -414,28 +414,28 @@ process_file()
 
 	# Soft post-preprocess workarounds.  Fragile.
 	case "$f" in
-		*linux/btrfs.h)
-			sed -i '/[[:space:]]BTRFS_IOC_[GS]ET_FSLABEL[[:space:]]/d' \
-				"$tmpdir"/header.out
-			;;
-		*linux/kvm.h)
-			arm_list='KVM_ARM_[A-Z_]+'
-			ppc_list='KVM_ALLOCATE_RMA|KVM_CREATE_SPAPR_TCE|KVM_CREATE_SPAPR_TCE_64|KVM_PPC_[A-Z1-9_]+'
-			s390_list='KVM_S390_[A-Z_]+'
-			x86_list='KVM_GET_CPUID2|KVM_GET_DEBUGREGS|KVM_GET_EMULATED_CPUID|KVM_GET_LAPIC|KVM_GET_MSRS|KVM_GET_MSR_FEATURE_INDEX_LIST|KVM_GET_MSR_INDEX_LIST|KVM_GET_NESTED_STATE|KVM_GET_PIT|KVM_GET_PIT2|KVM_GET_SREGS2|KVM_GET_SUPPORTED_CPUID|KVM_GET_SUPPORTED_HV_CPUID|KVM_GET_VCPU_EVENTS|KVM_GET_XCRS|KVM_GET_XSAVE|KVM_HYPERV_EVENTFD|KVM_SET_CPUID|KVM_SET_CPUID2|KVM_SET_DEBUGREGS|KVM_SET_LAPIC|KVM_SET_MEMORY_ALIAS|KVM_SET_MSRS|KVM_SET_NESTED_STATE|KVM_SET_PIT|KVM_SET_PIT2|KVM_SET_PMU_EVENT_FILTER|KVM_SET_SREGS2|KVM_SET_VCPU_EVENTS|KVM_SET_XCRS|KVM_SET_XSAVE|KVM_XEN_HVM_CONFIG|KVM_X86_[A-Z_]+'
-			case "$uname_m" in
-				aarch64|arm*) list="$ppc_list|$s390_list|$x86_list" ;;
-				ppc*) list="$arm_list|$s390_list|$x86_list" ;;
-				s390*) list="$arm_list|$ppc_list|$x86_list" ;;
-				i?86|x86_64*) list="$arm_list|$ppc_list|$s390_list" ;;
-				*) list="$arm_list|$ppc_list|$s390_list|$x86_list" ;;
-			esac
-			sed -r -i "/[[:space:]]($list)[[:space:]]/d" "$tmpdir"/header.out
-			;;
-		*linux/v4l2-subdev.h)
-			sed -r -i '/[[:space:]]VIDIOC_SUBDEV_(DV_TIMINGS_CAP|ENUM_DV_TIMINGS|ENUMSTD|G_DV_TIMINGS|G_EDID|G_STD|QUERY_DV_TIMINGS|QUERYSTD|S_DV_TIMINGS|S_EDID|S_STD)[[:space:]]/d' \
-				"$tmpdir"/header.out
-			;;
+	*linux/btrfs.h)
+		sed -i '/[[:space:]]BTRFS_IOC_[GS]ET_FSLABEL[[:space:]]/d' \
+			"$tmpdir"/header.out
+		;;
+	*linux/kvm.h)
+		arm_list='KVM_ARM_[A-Z_]+'
+		ppc_list='KVM_ALLOCATE_RMA|KVM_CREATE_SPAPR_TCE|KVM_CREATE_SPAPR_TCE_64|KVM_PPC_[A-Z1-9_]+'
+		s390_list='KVM_S390_[A-Z_]+'
+		x86_list='KVM_GET_CPUID2|KVM_GET_DEBUGREGS|KVM_GET_EMULATED_CPUID|KVM_GET_LAPIC|KVM_GET_MSRS|KVM_GET_MSR_FEATURE_INDEX_LIST|KVM_GET_MSR_INDEX_LIST|KVM_GET_NESTED_STATE|KVM_GET_PIT|KVM_GET_PIT2|KVM_GET_SREGS2|KVM_GET_SUPPORTED_CPUID|KVM_GET_SUPPORTED_HV_CPUID|KVM_GET_VCPU_EVENTS|KVM_GET_XCRS|KVM_GET_XSAVE|KVM_HYPERV_EVENTFD|KVM_SET_CPUID|KVM_SET_CPUID2|KVM_SET_DEBUGREGS|KVM_SET_LAPIC|KVM_SET_MEMORY_ALIAS|KVM_SET_MSRS|KVM_SET_NESTED_STATE|KVM_SET_PIT|KVM_SET_PIT2|KVM_SET_PMU_EVENT_FILTER|KVM_SET_SREGS2|KVM_SET_VCPU_EVENTS|KVM_SET_XCRS|KVM_SET_XSAVE|KVM_XEN_HVM_CONFIG|KVM_X86_[A-Z_]+'
+		case "$uname_m" in
+		aarch64|arm*) list="$ppc_list|$s390_list|$x86_list" ;;
+		ppc*) list="$arm_list|$s390_list|$x86_list" ;;
+		s390*) list="$arm_list|$ppc_list|$x86_list" ;;
+		i?86|x86_64*) list="$arm_list|$ppc_list|$s390_list" ;;
+		*) list="$arm_list|$ppc_list|$s390_list|$x86_list" ;;
+		esac
+		sed -r -i "/[[:space:]]($list)[[:space:]]/d" "$tmpdir"/header.out
+		;;
+	*linux/v4l2-subdev.h)
+		sed -r -i '/[[:space:]]VIDIOC_SUBDEV_(DV_TIMINGS_CAP|ENUM_DV_TIMINGS|ENUMSTD|G_DV_TIMINGS|G_EDID|G_STD|QUERY_DV_TIMINGS|QUERYSTD|S_DV_TIMINGS|S_EDID|S_STD)[[:space:]]/d' \
+			"$tmpdir"/header.out
+		;;
 	esac
 
 	# Need to exclude ioctl commands defined elsewhere.

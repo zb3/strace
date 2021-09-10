@@ -31,9 +31,9 @@ done
 "../$NAME" > /dev/null || {
 	rc=$?
 	case "$rc" in
-		1) ;; # expected
-		77) skip_ "../$NAME exited with code $rc" ;;
-		*) fail_ "../$NAME failed with code $rc" ;;
+	1) ;; # expected
+	77) skip_ "../$NAME exited with code $rc" ;;
+	*) fail_ "../$NAME failed with code $rc" ;;
 	esac
 }
 

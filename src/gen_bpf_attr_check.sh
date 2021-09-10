@@ -22,8 +22,8 @@ EOF
 
 for struct in $(sed -n 's/^struct \([^[:space:]]\+_struct\) .*/\1/p' < "$input"); do
 	case "$struct" in
-		BPF_*) type_name='union bpf_attr' ;;
-		*) type_name="struct ${struct%_struct}" ;;
+	BPF_*) type_name='union bpf_attr' ;;
+	*) type_name="struct ${struct%_struct}" ;;
 	esac
 	TYPE_NAME="$(printf %s "$type_name" |tr '[:lower:] ' '[:upper:]_')"
 

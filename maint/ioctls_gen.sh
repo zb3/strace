@@ -15,18 +15,18 @@ msg()
 }
 
 case $# in
-	1)
-		inc_dir="$1"
-		arch_dir=
-		;;
-	2)
-		inc_dir="$1"
-		arch_dir="$2"
-		;;
-	*)
-	        echo >&2 "usage: $me include-directory [arch-include-directory]"
-	        exit 1
-		;;
+1)
+	inc_dir="$1"
+	arch_dir=
+	;;
+2)
+	inc_dir="$1"
+	arch_dir="$2"
+	;;
+*)
+	echo >&2 "usage: $me include-directory [arch-include-directory]"
+	exit 1
+	;;
 esac
 
 # Check and canonicalize include-directory and arch-include-directory.

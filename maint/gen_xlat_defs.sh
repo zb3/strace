@@ -102,12 +102,12 @@ uniq |
 while read name_ rest; do
 	# Empty lines, comments, and "# " directives are passed verbatim.
 	case "$name_ $rest" in
-		\ )
-			echo
-			continue ;;
-		\#\ *|${comment_glob})
-			printf '%s\n' "$name_ $rest"
-			continue ;;
+	\ )
+		echo
+		continue ;;
+	\#\ *|${comment_glob})
+		printf '%s\n' "$name_ $rest"
+		continue ;;
 	esac
 	sed -rn 's/#[[:space:]]*define[[:space:]]+('"$name_"')[[:space:]]+([x[:xdigit:]]+).*$/\2\t\1/p' \
 		$LINUX_SRC/include/uapi/$COMMON_DEFS_GLOB_PATTERN |

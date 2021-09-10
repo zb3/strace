@@ -174,10 +174,10 @@ gen_header()
 	# 1st pass: output directives.
 	while read -r line; do
 		case "$line" in
-			*/\**)
-			line=$(printf "%s" "$line" |
-				sed "s|[[:space:]]*/\*.*\*/[[:space:]]*||")
-			;;
+		*/\**)
+		line=$(printf "%s" "$line" |
+			sed "s|[[:space:]]*/\*.*\*/[[:space:]]*||")
+		;;
 		esac
 
 		case $line in
@@ -264,10 +264,10 @@ gen_header()
 	# 2nd pass: output everything.
 	while read -r line; do
 		case "$line" in
-			*/\**)
-			line=$(printf "%s" "$line" |
-				sed "s|[[:space:]]*/\*.*\*/[[:space:]]*||")
-			;;
+		*/\**)
+		line=$(printf "%s" "$line" |
+			sed "s|[[:space:]]*/\*.*\*/[[:space:]]*||")
+		;;
 		esac
 
 		case ${line} in
