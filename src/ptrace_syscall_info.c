@@ -282,7 +282,7 @@ print_psi_entry(const typeof_field(struct_ptrace_syscall_info, entry) *const p,
 	if (nargs) {
 		tprint_struct_next();
 		PRINT_FIELD_ARRAY_UPTO(*p, args, nargs, tcp,
-				       print_xint64_array_member);
+				       print_xint_array_member);
 	}
 	tprint_struct_end();
 }
@@ -299,7 +299,7 @@ print_psi_seccomp(const typeof_field(struct_ptrace_syscall_info, seccomp) *const
 	if (nargs) {
 		tprint_struct_next();
 		PRINT_FIELD_ARRAY_UPTO(*p, args, nargs, tcp,
-				       print_xint64_array_member);
+				       print_xint_array_member);
 	}
 	if (fetch_size >= expected_seccomp_size) {
 		tprint_struct_next();
