@@ -50,6 +50,7 @@
 #  define XLAT_UNKNOWN(val_, dflt_) STRINGIFY_VAL(val_)
 
 #  define XLAT_FMT "%#x"
+#  define XLAT_FMT_U "%u"
 #  define XLAT_FMT_LL "%#llx"
 #  define XLAT_ARGS(a_) (a_)
 #  define XLAT_SEL(v_, s_) v_
@@ -65,6 +66,7 @@
 #  define XLAT_UNKNOWN(val_, dflt_) STRINGIFY_VAL(val_) " /* " dflt_ " */"
 
 #  define XLAT_FMT "%#x /* %s */"
+#  define XLAT_FMT_U "%u /* %s */"
 #  define XLAT_FMT_LL "%#llx /* %s */"
 #  define XLAT_ARGS(a_) a_, #a_
 #  define XLAT_SEL(v_, s_) v_, s_
@@ -80,6 +82,7 @@
 #  define XLAT_UNKNOWN(val_, dflt_) STRINGIFY_VAL(val_) " /* " dflt_ " */"
 
 #  define XLAT_FMT "%s"
+#  define XLAT_FMT_U "%s"
 #  define XLAT_FMT_LL "%s"
 #  define XLAT_ARGS(a_) #a_
 #  define XLAT_SEL(v_, s_) s_
