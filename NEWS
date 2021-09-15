@@ -3,6 +3,7 @@ Noteworthy changes in release ?.?? (????-??-??)
 
 * Improvements
   * Implemented decoding of process_mrelease syscall, introduced in Linux 5.15.
+  * Enhanced decoding of io_uring_register syscall.
   * Updated the list of MPOL_* constants.
 
 * Bug fixes
