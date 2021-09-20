@@ -4,7 +4,7 @@ Noteworthy changes in release ?.?? (????-??-??)
 * Improvements
   * Implemented decoding of process_mrelease syscall, introduced in Linux 5.15.
   * Enhanced decoding of io_uring_register syscall.
-  * Updated the list of MPOL_* constants.
+  * Updated the list of FAN_REPORT_*, MPOL_* constants.
 
 * Bug fixes
   * Fixed printing of struct bpf_prog_info.map_ids array.
