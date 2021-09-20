@@ -101,6 +101,17 @@ main(void)
 	printf("sched_setaffinity(%d%s, 1, %p) = %s\n",
 	       pid, pid_str, ((char *) cpuset) + cpuset_size, sprintrc(rc));
 
+	if (first_cpu < 24) {
+		CPU_ZERO_S(cpuset_size, cpuset);
+		CPU_SET_S(first_cpu, cpuset_size, cpuset);
+		CPU_SET_S(24, cpuset_size, cpuset);
+		if (setaffinity(pid, 3, cpuset))
+			perror_msg_and_skip("sched_setaffinity");
+		pidns_print_leader();
+		printf("sched_setaffinity(%d%s, 3, [%u]) = 0\n",
+		       pid, pid_str, first_cpu);
+	}
+
 	CPU_ZERO_S(cpuset_size, cpuset);
 	CPU_SET_S(cpu, cpuset_size, cpuset);
 	if (setaffinity(pid, cpuset_size, cpuset))
