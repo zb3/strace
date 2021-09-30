@@ -25,6 +25,7 @@
 
 #include "largefile_wrappers.h"
 #include "number_set.h"
+#include "print_fields.h"
 #include "print_utils.h"
 #include "secontext.h"
 #include "static_assert.h"
@@ -200,6 +201,52 @@ parse_ts(const char *s, struct timespec *t)
 	}
 
 	return 0;
+}
+
+#define ILOG10_ITER_(val_, div_, ret_, pow_)	\
+	do {					\
+		if ((val_) >= (div_)) {		\
+			(val_) /= (div_);	\
+			(ret_) += (pow_);	\
+		}				\
+	} while (0)				\
+	/* End of ILOG10_ITER_ */
+
+/* Returns 0 for 0. */
+static int
+ilog10(uint64_t val)
+{
+	int ret = 0;
+
+	ILOG10_ITER_(val, 10000000000000000ULL, ret, 16);
+	ILOG10_ITER_(val, 100000000,            ret, 8);
+	ILOG10_ITER_(val, 10000,                ret, 4);
+	ILOG10_ITER_(val, 100,                  ret, 2);
+	ILOG10_ITER_(val, 10,                   ret, 1);
+
+	return ret;
+}
+
+void
+print_clock_t(uint64_t val)
+{
+	static long clk_tck;
+	static int frac_width;
+
+	if (!clk_tck) {
+		errno = 0;
+		clk_tck = sysconf(_SC_CLK_TCK);
+		if (clk_tck == -1 && errno)
+			debug_func_perror_msg("sysconf(_SC_CLK_TCK)");
+		if (clk_tck == 0)
+			clk_tck = -1;
+		if (clk_tck > 0)
+			frac_width = MIN(ilog10(clk_tck), 9);
+	}
+
+	PRINT_VAL_U(val);
+	if (xlat_verbose(xlat_verbosity) != XLAT_STYLE_RAW && clk_tck > 0)
+		tprintf_comment("%.*g s", frac_width, (double) val / clk_tck);
 }
 
 #if !defined HAVE_STPCPY
