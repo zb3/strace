@@ -214,6 +214,7 @@ inotify_init1-y	-a27 -y -e trace=inotify_init1
 io_uring_enter	-y
 io_uring_register	-y
 io_uring_setup	-a26 -y
+ioctl_binder	+ioctl.test -v
 ioctl_block	+ioctl.test
 ioctl_dm	+ioctl.test -s9
 ioctl_dm-v	+ioctl.test -v -s9
